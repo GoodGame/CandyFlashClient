@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<title>Test player page</title>
+
+    <script src="http://hls.goodgame.ru/candy/candy2.min.js"></script>
+
+    <script type="text/javascript" src="js2flash.js"></script>
+    <script type="text/javascript" src="swfobject.js"></script>
+
+    <script>
+        window.onload = function() {
+            var url = document.location.href;
+            var src = url.indexOf("?")==-1 ? 'pomi_240' : url.substring( url.indexOf("?")+1 );
+            var m3u8Url =  'http://hls.goodgame.ru/hls/' + src + '.m3u8';
+
+            var d = document.createElement("div");
+            d.setAttribute("id", 'swfPlayer');
+            document.getElementById("playerContainer").appendChild(d);
+
+            var swfVersionStr = "14.0.0",
+                xiSwfUrlStr = "",
+                params = {
+                    quality: "high",
+                    allowfullscreen: "true",
+                    allowScriptAccess: "always",
+                    wmode: "direct",
+                    bgcolor: '#000000'
+                },
+
+                attributes = {
+                    align: "middle",
+                    id: 'swfPlayer',
+                    name: 'swfPlayer'
+                },
+
+                flashvars = {
+                    src: m3u8Url
+                };
+
+            // ${swf}
+            swfobject.embedSWF(
+                    'player.swf', 'swfPlayer',
+                    "800px", "450px",
+                    swfVersionStr, xiSwfUrlStr,
+                    flashvars, params, attributes, playerCreate);
+
+            function playerCreate() {
+                var candy = new Candy({video: Candy.helpers.getCurrentBufferTime, streamKey: 'flashls_test_' + src, loadedCallback: ext1});
+                Candy.helpers.loader = candy.xhrLoader();
+            }
+
+            function ext1(data) {
+                console.log('loadedCallback', data);
+            }
+        };
+    </script>
+</head>
+<body>
+    <div id="playerContainer"></div>
+</body>
+</html>
