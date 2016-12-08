@@ -1,6 +1,6 @@
 {
   "name": "Candyflashclient",
   "tagline": "",
-  "body": "### Candy flash hls demo\r\n\r\n\r\n",
+  "body": "### Candy flash hls demo\r\n\r\n<script>\r\nalert('test');\r\n</script>\r\n",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
