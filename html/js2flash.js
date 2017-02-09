@@ -64,14 +64,14 @@ Candy.helpers.base64ArrayBuffer = function(arrayBuffer) {
 };
 
 Candy.helpers.currentBufferTime = 0;
+
 Candy.helpers.setCurrentBufferTime = function(bufferTime) {
   Candy.helpers.currentBufferTime = bufferTime;
 };
+
 Candy.helpers.getCurrentBufferTime = function() {
   return Candy.helpers.currentBufferTime;
 };
-
-Candy.helpers.loader;
 
 Candy.helpers.JSLoaderPlaylist = {
 
@@ -98,7 +98,10 @@ Candy.helpers.JSLoaderPlaylist = {
     xhr.open("GET", url, loadcallback? true: false);
     if (loadcallback) {
       xhr.onload = loadcallback;
-      xhr.onerror= errorcallback;
+      xhr.onerror= function(oError) {
+        console.log("An error occurred while transferring the file :" + oError.target.status);
+        xhr.binding.flashObject[resourceFailureFlashCallback]();
+      };
       xhr.send();
     } else {
       xhr.send();
@@ -110,10 +113,6 @@ Candy.helpers.JSLoaderPlaylist = {
     console.log("xhrReadBytes", this.resourceLoadedFlashCallback, this.binding.flashObject);
     this.binding.flashObject[this.resourceLoadedFlashCallback](event.currentTarget.responseText);
   },
-  xhrTransferFailed : function(oEvent) {
-    console.log("An error occurred while transferring the file :" + oEvent.target.status);
-    this.binding.flashObject[this.resourceFailureFlashCallback](res);
-  }
 };
 
 Candy.helpers.JSLoaderFragment = {
@@ -133,7 +132,6 @@ Candy.helpers.JSLoaderFragment = {
     }
   },
   xhrGET : function (url,loadcallback, errorcallback,resourceLoadedFlashCallback, resourceFailureFlashCallback, responseType) {
-    //var xhr = new XMLHttpRequest();
     var xhr = !!Candy.helpers.loader ? new Candy.helpers.loader() : new XMLHttpRequest();
     this.xhr = xhr;
     xhr.binding = this;
@@ -144,9 +142,11 @@ Candy.helpers.JSLoaderFragment = {
       xhr.responseType = responseType;
     }
     if (loadcallback) {
-      //xhr.onload = loadcallback;
       xhr.addEventListener('load', loadcallback);
-      xhr.onerror= errorcallback;
+      xhr.onerror = function(oEvent) {
+        console.log("An error occurred while transferring the file :" + oEvent.target.status);
+        xhr.binding.flashObject[resourceFailureFlashCallback]();
+      };
       xhr.send();
     } else {
       xhr.send();
@@ -165,9 +165,5 @@ Candy.helpers.JSLoaderFragment = {
     var t2 = new Date();
     //console.log('encoding/toFlash:' + (t1-t0) + '/' + (t2-t1));
     //console.log('encoding speed/toFlash:' + Math.round(len/(t1-t0)) + 'kB/s/' + Math.round(res.length/(t2-t1)) + 'kB/s');
-  },
-  xhrTransferFailed : function(oEvent) {
-    console.log("An error occurred while transferring the file :" + oEvent.target.status);
-    this.binding.flashObject[this.resourceFailureFlashCallback](res);
   }
 };
